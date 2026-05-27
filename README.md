@@ -226,7 +226,7 @@ process.on('SIGTERM', () => telemetry.destroy());
 ## Go SDK 接入
 
 ```bash
-go get github.com/makogroup/telemetry-go
+go get github.com/827652549/mako-ai-server-trace/sdks/go
 ```
 
 ```go
@@ -234,7 +234,7 @@ package main
 
 import (
     "time"
-    telemetry "github.com/makogroup/telemetry-go"
+    telemetry "github.com/827652549/mako-ai-server-trace/sdks/go"
 )
 
 func main() {
