@@ -1,0 +1,24 @@
+{
+  "name": "@makogroup/telemetry-node",
+  "version": "0.0.1",
+  "description": "Node.js telemetry SDK with Express/Koa middleware",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --external express",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch --external express"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": { "optional": true }
+  }
+}

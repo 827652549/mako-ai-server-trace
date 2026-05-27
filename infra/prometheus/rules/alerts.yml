@@ -1,0 +1,32 @@
+groups:
+  - name: service_health
+    rules:
+      # 服务健康检查失败
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "服务 {{ $labels.job }} 健康检查失败"
+          description: "{{ $labels.instance }} 已经不可达超过 1 分钟"
+
+      # 错误率突增
+      - alert: HighErrorRate
+        expr: sum by (app_id) (rate(trace_errors_total[5m])) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.app_id }} 错误率突增"
+          description: "当前错误率 {{ $value }}/s，超过阈值 10/s"
+
+      # 上报量异常（突降可能意味着服务挂了）
+      - alert: TrafficDrop
+        expr: sum by (app_id) (rate(trace_events_total[5m])) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.app_id }} 上报量异常下降"
+          description: "最近 5 分钟上报量接近 0"
