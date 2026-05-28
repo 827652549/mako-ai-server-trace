@@ -68,9 +68,30 @@
       ]
     },
     {
-      "title": "最近错误日志",
+      "title": "全量日志",
       "type": "logs",
       "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "{type=~\"$log_type\"} | json",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false
+      }
+    },
+    {
+      "title": "最近错误日志",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 26 },
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
@@ -87,7 +108,25 @@
   ],
   "schemaVersion": 39,
   "tags": ["trace", "telemetry"],
-  "templating": { "list": [] },
+  "templating": {
+    "list": [
+      {
+        "name": "log_type",
+        "label": "日志类型",
+        "type": "custom",
+        "query": "error,event,metric,all",
+        "options": [
+          { "text": "all", "value": ".+", "selected": true },
+          { "text": "error", "value": "error", "selected": false },
+          { "text": "event", "value": "event", "selected": false },
+          { "text": "metric", "value": "metric", "selected": false }
+        ],
+        "current": { "text": "all", "value": ".+" },
+        "includeAll": false,
+        "multi": false
+      }
+    ]
+  },
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
