@@ -74,7 +74,7 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "{type=~\"$log_type\"} | json",
+          "expr": "{type=~\".+\"} | json",
           "refId": "A"
         }
       ],
