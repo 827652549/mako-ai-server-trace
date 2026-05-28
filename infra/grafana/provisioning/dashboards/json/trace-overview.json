@@ -104,6 +104,228 @@
         "sortOrder": "Descending",
         "enableLogDetails": true
       }
+    },
+    {
+      "title": "PV 趋势（按路径）",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "sum by (path) (count_over_time({app_id=\"mako-platform\", type=\"event\", event_key=\"page_view\"} | json [$__range]))",
+          "legendFormat": "{{path}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        }
+      }
+    },
+    {
+      "title": "文章阅读量 Top 10",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "topk(10, sum by (article_id) (count_over_time({app_id=\"mako-platform\", event_key=\"article_read\"} | json [24h])))",
+          "legendFormat": "{{article_id}}",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "title": "API 请求耗时 P50/P95/P99",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(api_request_duration_bucket{app_id=\"mako-platform-server\"}[5m])) by (le))",
+          "legendFormat": "P50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(api_request_duration_bucket{app_id=\"mako-platform-server\"}[5m])) by (le))",
+          "legendFormat": "P95",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(api_request_duration_bucket{app_id=\"mako-platform-server\"}[5m])) by (le))",
+          "legendFormat": "P99",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        }
+      }
+    },
+    {
+      "title": "API 错误率",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "sum by (route) (increase(trace_errors_total{app_id=\"mako-platform-server\"}[5m]))",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "color": { "mode": "palette-classic" }
+        }
+      }
+    },
+    {
+      "title": "用户行为漏斗",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"sign_up\"} | json [24h]))",
+          "legendFormat": "注册",
+          "refId": "A",
+          "instant": true
+        },
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"sign_in\"} | json [24h]))",
+          "legendFormat": "登录",
+          "refId": "B",
+          "instant": true
+        },
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"article_read\"} | json [24h]))",
+          "legendFormat": "阅读",
+          "refId": "C",
+          "instant": true
+        },
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"article_like\"} | json [24h]))",
+          "legendFormat": "点赞",
+          "refId": "D",
+          "instant": true
+        },
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"comment_submit\"} | json [24h]))",
+          "legendFormat": "评论",
+          "refId": "E",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "textMode": "auto",
+        "colorMode": "background"
+      }
+    },
+    {
+      "title": "Web Vitals 分布",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"FCP\"})",
+          "legendFormat": "FCP",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"LCP\"})",
+          "legendFormat": "LCP",
+          "refId": "B"
+        },
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"CLS\"})",
+          "legendFormat": "CLS",
+          "refId": "C"
+        },
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"TTFB\"})",
+          "legendFormat": "TTFB",
+          "refId": "D"
+        },
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"DCL\"})",
+          "legendFormat": "DCL",
+          "refId": "E"
+        },
+        {
+          "expr": "avg(metric_value{app_id=\"mako-platform\", metric_name=\"load\"})",
+          "legendFormat": "Load",
+          "refId": "F"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        }
+      }
+    },
+    {
+      "title": "实时在线用户",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 60 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "count(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json [5m]))",
+          "legendFormat": "在线用户",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "title": "搜索热词",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 60 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [
+        {
+          "expr": "topk(20, sum by (query) (count_over_time({app_id=\"mako-platform\", event_key=\"search_query\"} | json [24h])))",
+          "legendFormat": "{{query}}",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      }
     }
   ],
   "schemaVersion": 39,
@@ -124,6 +346,38 @@
         "current": { "text": "all", "value": ".+" },
         "includeAll": false,
         "multi": false
+      },
+      {
+        "name": "time_range",
+        "label": "时间范围",
+        "type": "interval",
+        "query": "1m,5m,15m,30m,1h,6h,12h,24h,7d,30d",
+        "current": { "text": "1h", "value": "1h" },
+        "options": [
+          { "text": "1m", "value": "1m", "selected": false },
+          { "text": "5m", "value": "5m", "selected": false },
+          { "text": "15m", "value": "15m", "selected": false },
+          { "text": "30m", "value": "30m", "selected": false },
+          { "text": "1h", "value": "1h", "selected": true },
+          { "text": "6h", "value": "6h", "selected": false },
+          { "text": "12h", "value": "12h", "selected": false },
+          { "text": "24h", "value": "24h", "selected": false },
+          { "text": "7d", "value": "7d", "selected": false },
+          { "text": "30d", "value": "30d", "selected": false }
+        ],
+        "includeAll": false,
+        "multi": false
+      },
+      {
+        "name": "page_path",
+        "label": "页面路径",
+        "type": "query",
+        "query": "label_values({app_id=\"mako-platform\", event_key=\"page_view\"} | json, path)",
+        "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+        "current": {},
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2
       }
     ]
   },
