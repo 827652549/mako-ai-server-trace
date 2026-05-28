@@ -112,7 +112,7 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "sum by (path) (count_over_time({app_id=\"mako-platform\", type=\"event\", event_key=\"page_view\"} | json [$__range]))",
+          "expr": "sum by (path) (count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"page_view\" | unwrap path [$__range]))",
           "legendFormat": "{{path}}",
           "refId": "A"
         }
@@ -131,7 +131,7 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "topk(10, sum by (article_id) (count_over_time({app_id=\"mako-platform\", event_key=\"article_read\"} | json [24h])))",
+          "expr": "topk(10, sum by (article_id) (count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"article_read\" | unwrap article_id [24h])))",
           "legendFormat": "{{article_id}}",
           "refId": "A",
           "instant": true
@@ -199,31 +199,31 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"sign_up\"} | json [24h]))",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"sign_up\" [24h]))",
           "legendFormat": "注册",
           "refId": "A",
           "instant": true
         },
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"sign_in\"} | json [24h]))",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"sign_in\" [24h]))",
           "legendFormat": "登录",
           "refId": "B",
           "instant": true
         },
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"article_read\"} | json [24h]))",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"article_read\" [24h]))",
           "legendFormat": "阅读",
           "refId": "C",
           "instant": true
         },
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"article_like\"} | json [24h]))",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"article_like\" [24h]))",
           "legendFormat": "点赞",
           "refId": "D",
           "instant": true
         },
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", event_key=\"comment_submit\"} | json [24h]))",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"comment_submit\" [24h]))",
           "legendFormat": "评论",
           "refId": "E",
           "instant": true
@@ -291,8 +291,8 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "count(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json [5m]))",
-          "legendFormat": "在线用户",
+          "expr": "sum(count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"page_view\" [5m]))",
+          "legendFormat": "PV (5m)",
           "refId": "A",
           "instant": true
         }
@@ -315,7 +315,7 @@
       "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
       "targets": [
         {
-          "expr": "topk(20, sum by (query) (count_over_time({app_id=\"mako-platform\", event_key=\"search_query\"} | json [24h])))",
+          "expr": "topk(20, sum by (query) (count_over_time({app_id=\"mako-platform\", type=\"event\"} | json | event_key=\"search_query\" | unwrap query [24h])))",
           "legendFormat": "{{query}}",
           "refId": "A",
           "instant": true
@@ -367,17 +367,6 @@
         ],
         "includeAll": false,
         "multi": false
-      },
-      {
-        "name": "page_path",
-        "label": "页面路径",
-        "type": "query",
-        "query": "label_values({app_id=\"mako-platform\", event_key=\"page_view\"} | json, path)",
-        "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
-        "current": {},
-        "includeAll": true,
-        "multi": false,
-        "refresh": 2
       }
     ]
   },
@@ -386,5 +375,5 @@
   "timezone": "browser",
   "title": "Trace Overview",
   "uid": "trace-overview",
-  "version": 1
+  "version": 2
 }
